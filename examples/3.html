@@ -37,7 +37,7 @@
 
     var geneTrack = gBTheme.track("gene");
     geneTrack.display().on("click", function (gene) {
-        if (!gene.Parent) { // It is not a transcript
+        if (!gene.gene) { // It is not a transcript
             gB.gene (gene.id);
             gBTheme.start();
         }

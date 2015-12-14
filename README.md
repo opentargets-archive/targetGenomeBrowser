@@ -86,20 +86,45 @@ Returns a given track by name. The following names are available:
 ````javascript
 var cttvGB = targetGenomeBrowser();
 var geneTrack = cttvGB.track("gene");
+
+geneTrack.display().on("click", function (gene) {
+    var elem = this;
+    var tooltip_obj = function (g) {
+        var obj = {};
+        obj.header = (g.display_name || g.external_name) + " (" + g.id + ")";
+        obj.rows = [];
+
+        obj.rows.push( {
+            "label" : "Biotype",
+            "value" : g.biotype
+        });
+
+        obj.rows.push( {
+            "label" : "Description",
+            "value" : g.description || g.gene.description
+        });
+
+        return obj;
+    }
+    tnt.tooltip.table()
+        .call(elem, tooltip_obj(gene));
+});
 ````
 
-If any change is made to the _track_ (see [tnt.genome](https://github.com/emepyc/tnt.genome) and [tnt.board](https://github.com/emepyc/tnt.board) for examples), the visualisation needs to be re-started using the `start` method
+If any change is made to the _track_ after the plug-in has been initialised (see [tnt.genome](https://github.com/emepyc/tnt.genome) and [tnt.board](https://github.com/emepyc/tnt.board) for examples), the visualisation needs to be re-started using the `start` method
 
 #### start
-Re-start the genome browser after making any change. For example, the following snippet change the gene to be displayed as transcripts when the gene is clicked:
+Re-start the genome browser after making any change. For example, the following snippet change the gene to be displayed as transcripts when a gene is clicked:
 
 ````javascript
 gBTheme(gB, document.getElementById("genomeBrowser"));
 
 var geneTrack = gBTheme.track("gene");
 geneTrack.display().on("click", function (gene) {
-    gB.gene (gene.id);
-    gBTheme.start();
+    if (!gene.gene) { // It is not a transcript
+        gB.gene (gene.id);
+        gBTheme.start();
+    }
 });
 ````
 
