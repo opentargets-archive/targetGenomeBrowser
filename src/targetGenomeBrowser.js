@@ -11,24 +11,28 @@ var pipelines = require("./pipelines.js");
 var cttv_genome_browser = function() {
     "use strict";
 
+    // Options for the widget
     var conf = {
+        links_prefix: "https://www.targetvalidation.org",
         show_links: true,
         show_snps: true,
         show_nav: true,
         cttvRestApi: cttvApi(),
-        // foreground_color: "#586471",
         efo: undefined
     };
 
     var tracks = {};
 
-    var navTheme = nav()
-        .show_options(true);
+    var navTheme = nav();
 
     // var show_links   = true;
     // var efo;
 
     var snp_new_legend;
+
+    // Divs
+    var snp_legend_div;
+    var navDiv;
 
     var snpColors = {
         TargetDisease: "#FF0000", // red
@@ -39,13 +43,10 @@ var cttv_genome_browser = function() {
 
     var ensemblRestApi;
 
-    var gwas_data = [];
-
     // div_ids to display different elements
     // They have to be set dynamically because the IDs contain the div_id of the main element containing the plug-in
     var div_id;
 
-    // var fgColor = "#586471";
     var geneTrackHeight = 0;
 
     var gBrowser;
@@ -59,10 +60,15 @@ var cttv_genome_browser = function() {
 
         ensemblRestApi = gB.rest();
 
+        // If the nav is shown or not
+        navTheme
+            .show_options(conf.show_nav);
+
         // tooltips
         var tooltips = browser_tooltips()
             .cttvRestApi (conf.cttvRestApi)
             .ensemblRestApi (ensemblRestApi)
+            .prefix (conf.links_prefix)
             .view (gB);
 
         // Transcript data
@@ -298,10 +304,8 @@ var cttv_genome_browser = function() {
                         return flattenedSNPs;
                     });
             });
-            // });
 
         // Gwas track
-
         var gwas_display = tnt.board.track.feature.pin()
             .domain([0.3,1.2])
             .index(function (d) {
@@ -423,10 +427,14 @@ var cttv_genome_browser = function() {
                 .limit(200)
             );
 
+        gBrowserTheme.start();
+
         // The order of the elements are: Nav div // genome browser div // legend div
         // nav div
-        var navDiv = d3.select(div)
+        navDiv = d3.select(div)
             .append("div");
+        // Navigation
+        navTheme (gBrowser, navDiv.node());
 
         gBrowser(div);
 
@@ -444,7 +452,7 @@ var cttv_genome_browser = function() {
             .data(transcript_track.data().elements());
 
         // The legen for the snps colors
-        var snp_legend_div = d3.select(div)
+        snp_legend_div = d3.select(div)
             .append("div")
             .attr("class", "tnt_legend_div");
         snp_legend_div
@@ -466,8 +474,38 @@ var cttv_genome_browser = function() {
             .add_track(transcript_label_track)
             .add_track(transcript_track);
 
-        // DATA
-        // Gene
+
+        // Links div
+        var links_pane = d3.select(div)
+            .append("div")
+            .attr("class", "tnt_links_pane")
+            .style("display", function() {
+                if (conf.show_links) {
+                    return "block";
+                } else {
+                    return "none";
+                }
+            });
+
+        // ensembl
+        links_pane
+            .append("span")
+            .text("Open in Ensembl");
+
+        var ensemblLoc = links_pane
+            .append("i")
+            .attr("title", "open region in ensembl")
+            .attr("class", "cttvGenomeBrowserIcon fa fa-external-link fa-2x")
+            .on("click", function() {var link = buildEnsemblLink(); window.open(link, "_blank");});
+
+    };
+
+    ///*********************////
+    /// RENDERING FUNCTIONS ////
+    ///*********************////
+    // API
+    // DATA
+    var start = function () {
         var geneUrl = ensemblRestApi.url.gene ({
             id: gB.gene()
         });
@@ -540,99 +578,67 @@ var cttv_genome_browser = function() {
                 // var zoomOut = (gene.end - gene.start) + 100;
                 // gB.zoom_out(zoomOut);
                 // We can finally start!
-                gB.chr(gene.seq_region_name);
+                gBrowser.chr(gene.seq_region_name);
                 navTheme.orig ({
                     from : start,
                     to : end
                 });
-                // Navigation
-                navTheme (gB, navDiv.node());
-                gB.start({from: start, to: end});
+                gBrowser.start({from: start, to: end});
 
+            });
+    };
+
+    var fillSNPLegend = function (gene, disease) {
+        var snp_legend_data = [];
+        if (disease) {
+            snp_legend_data.push({
+                label: "SNP in " + gene.display_name + " associated with " + disease.label,
+                color: snpColors.TargetDisease
+            });
+            snp_legend_data.push({
+                label: "SNP associated with " + disease.label + " in other genes",
+                color: snpColors.Disease
+            });
+        }
+        snp_legend_data.push({
+            label: "SNP in " + gene.display_name,
+            color: snpColors.Target
+        });
+        snp_legend_data.push({
+            label: "Other SNP",
+            color: snpColors.Other
         });
 
-
-        var fillSNPLegend = function (gene, disease) {
-            var snp_legend_data = [];
-            if (disease) {
-                snp_legend_data.push({
-                    label: "SNP in " + gene.display_name + " associated with " + disease.label,
-                    color: snpColors.TargetDisease
-                });
-                snp_legend_data.push({
-                    label: "SNP associated with " + disease.label + " in other genes",
-                    color: snpColors.Disease
-                });
-            }
-            snp_legend_data.push({
-                label: "SNP in " + gene.display_name,
-                color: snpColors.Target
-            });
-            snp_legend_data.push({
-                label: "Other SNP",
-                color: snpColors.Other
-            });
-
-            snp_new_legend = snp_legend_div.selectAll(".tnt_snp_legend")
-                .data(snp_legend_data)
-                .enter()
-                .append("div")
-                .attr("class", "tnt_snp_legend");
-
-            snp_new_legend
-                .append("div")
-                .attr("class", "tnt_legend_item")
-                .style("display", "inline-block")
-                .style("margin", "0px 5px 0px 15px")
-                .style("width", "10px")
-                .style("height", "10px")
-                .style("border", "1px solid #000")
-                .style("border-radius", "5px")
-                .style("background", function(d){
-                    return d.color;
-                });
-
-            snp_new_legend
-                .append("text")
-                .text(function(d) {
-                    return d.label;
-                });
-
-        };
-
-        // Links div
-        var links_pane = d3.select(div)
+        snp_new_legend = snp_legend_div.selectAll(".tnt_snp_legend")
+            .data(snp_legend_data)
+            .enter()
             .append("div")
-            .attr("class", "tnt_links_pane")
-            .style("display", function() {
-                if (conf.show_links) {
-                    return "block";
-                } else {
-                    return "none";
-                }
+            .attr("class", "tnt_snp_legend");
+
+        snp_new_legend
+            .append("div")
+            .attr("class", "tnt_legend_item")
+            .style("display", "inline-block")
+            .style("margin", "0px 5px 0px 15px")
+            .style("width", "10px")
+            .style("height", "10px")
+            .style("border", "1px solid #000")
+            .style("border-radius", "5px")
+            .style("background", function(d){
+                return d.color;
             });
 
-        // ensembl
-        links_pane
-            .append("span")
-            .text("Open in Ensembl");
-
-        var ensemblLoc = links_pane
-            .append("i")
-            .attr("title", "open region in ensembl")
-            .attr("class", "cttvGenomeBrowserIcon fa fa-external-link fa-2x")
-            .on("click", function() {var link = buildEnsemblLink(); window.open(link, "_blank");});
+        snp_new_legend
+            .append("text")
+            .text(function(d) {
+                return d.label;
+            });
 
     };
 
-    ///*********************////
-    /// RENDERING FUNCTIONS ////
-    ///*********************////
-    // API
-
-
     apijs(gBrowserTheme)
         .getset(conf)
+        .method('start', start)
         .method ("track", function (name) {
             switch (name) {
                 case "gene":

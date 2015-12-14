@@ -30,7 +30,34 @@
         .width(950);
 
     var gBTheme = targetGenomeBrowser()
-        .show_snps(false);
+        .show_nav(false)
+        .show_links(false);
+
     gBTheme(gB, document.getElementById("genomeBrowser"));
+
+    var geneTrack = gBTheme.track("gene");
+    geneTrack.display().on("click", function (gene) {
+        var elem = this;
+        var tooltip_obj = function (g) {
+            var obj = {};
+            obj.header = (g.display_name || g.external_name) + " (" + g.id + ")";
+            obj.rows = [];
+
+            obj.rows.push( {
+                "label" : "Biotype",
+                "value" : g.biotype
+            });
+
+            obj.rows.push( {
+                "label" : "Description",
+                "value" : g.description || g.gene.description
+            });
+
+            return obj;
+        }
+        tnt.tooltip.table()
+            .call(elem, tooltip_obj(gene));
+    });
+
     </script>
 </div>

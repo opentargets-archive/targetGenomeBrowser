@@ -32,7 +32,10 @@ gulp.task('default', ['lint', 'build-browser', 'build-browser-gzip']);
 
 gulp.task('sass', function () {
     return gulp.src('./index.scss')
-	.pipe(sass())
+	.pipe(sass({
+	    errLogToConsole: true
+	}))
+    .pipe(rename(outputFile + '.css'))
 	.pipe(gulp.dest(buildDir));
 });
 

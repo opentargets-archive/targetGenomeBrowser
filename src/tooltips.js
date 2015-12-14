@@ -1,15 +1,23 @@
 
 var tnt_tooltip = require("tnt.tooltip");
+var apijs = require("tnt.api");
 
 var tooltips = function () {
 
-    var cttvRestApi;
-    var ensemblRestApi;
-    var view;
+    var conf = {
+        cttvRestApi : undefined,
+        ensemblRestApi : undefined,
+        prefix : undefined,
+        view : undefined
+    };
+
     var id = 1;
     var target;
 
     var m = {};
+
+    var api = apijs(m)
+        .getset(conf);
 
     var snp_data = function (data, ensembl_data) {
         var obj = {};
@@ -37,7 +45,7 @@ var tooltips = function () {
             obj.rows.push({
                 "label" : "Location",
                 "link" : function (d) {
-                view.start({
+                conf.view.start({
                     from : d.pos - 50,
                     to   : d.pos + 50
                 });
@@ -59,7 +67,7 @@ var tooltips = function () {
             for (var i=0; i<data.associations.length; i++) {
                 var association = data.associations[i];
                 obj.rows.push({
-                    "label" : "<a href=/evidence/" + data.target.geneid + "/" + (association.efo.split("/").pop()) + ">" + association.label + "</a>",
+                    "label" : "<a href=" + conf.prefix + "/evidence/" + data.target.geneid + "/" + (association.efo.split("/").pop()) + ">" + association.label + "</a>",
                     "value" : association.pmids.length + (association.pmids.length === 1 ? " article" : " articles") + "  <a href='http://europepmc.org/search?query=" + association.pmids.map(function (d) {return "EXT_ID:"+d;}).join("%20OR%20") + "' target=_blank <i class='fa fa-newspaper-o fa-lg'></i></a>"
                 });
             }
@@ -72,7 +80,7 @@ var tooltips = function () {
 
             for (var i=0; i<data.study.length; i++) {
                 obj.rows.push({
-                    "label" : "<a href='/evidence/" + data.target.geneid + "/"+ (data.study[i].efo.split("/").pop()) + "'>" + data.study[i].efo_label + '</a>',
+                    "label" : "<a href='" + conf.prefix + "/evidence/" + data.target.geneid + "/"+ (data.study[i].efo.split("/").pop()) + "'>" + data.study[i].efo_label + '</a>',
                     "value" : parseFloat(data.study[i].pvalue).toPrecision(1) + " <a target=_blank href='http://europepmc.org/abstract/med/" + (data.study[i].pmid.split("/").pop()) + "'><i class='fa fa-newspaper-o fa-lg'></i></a>"
                 });
             }
@@ -83,7 +91,7 @@ var tooltips = function () {
     };
 
     // Tooltip on GWAS
-    m.snp = function (data) {
+    api.method('snp', function (data) {
         var t = tnt.tooltip.table()
             .width(250)
             .id(id);
@@ -91,28 +99,27 @@ var tooltips = function () {
         var elem = this;
         var spinner = tnt.tooltip.plain()
             .id(id);
-        var url = ensemblRestApi.url.variation({
+        var url = conf.ensemblRestApi.url.variation({
             species : "human"
         });
-        ensemblRestApi.call (url, {
+        conf.ensemblRestApi.call (url, {
             "ids" : [data.name]
         })
-        .catch (function () {
-            console.log("NO VARIANT INFORMATION FOR THIS SNP");
-        })
-        .then (function (resp) {
-            var obj = snp_data (data, resp.body[data.name]);
-            t.call (elem, obj, event);
-        });
-        spinner.call (elem, {
-            header : data.name,
-            body : "<i class='fa fa-spinner fa-2x fa-spin'></i>"
-        });
-
-    };
+            .catch (function () {
+                console.log("NO VARIANT INFORMATION FOR THIS SNP");
+            })
+            .then (function (resp) {
+                var obj = snp_data (data, resp.body[data.name]);
+                t.call (elem, obj, event);
+            });
+            spinner.call (elem, {
+                header : data.name,
+                body : "<i class='fa fa-spinner fa-2x fa-spin'></i>"
+            });
+    });
 
     // Tooltip on genes
-    m.gene = function (gene) {
+    api.method('gene', function (gene) {
 
         // Gene tooltip data
         var tooltip_obj = function (ensemblData, cttvData, transcriptData) {
@@ -125,8 +132,8 @@ var tooltips = function () {
             var associationsValue;
             var targetValue;
             if (cttvData && cttvData.data && cttvData.data.length > 0) {
-                associationsValue = "<a href='/target/" + ensemblData.id + "/associations'>" + (cttvData.data.length) + " disease associations</a> ";
-                targetValue = "<a href='/target/" + ensemblData.id + "'>View CTTV profile</a>";
+                associationsValue = "<a href='" + conf.prefix + "/target/" + ensemblData.id + "/associations'>" + (cttvData.data.length) + " disease associations</a> ";
+                targetValue = "<a href='" + conf.prefix + "/target/" + ensemblData.id + "'>View CTTV profile</a>";
             }
 
             obj.rows.push ({
@@ -192,57 +199,59 @@ var tooltips = function () {
         var s = tnt_tooltip.plain()
             .id(id);
 
-        var url = cttvRestApi.url.associations ({
+        var url = conf.cttvRestApi.url.associations ({
             "target" : (gene.isGene ? gene.id : gene.gene.id),
             "datastructure" : "flat",
             "filterbyscorevalue_min": 0,
             "stringency": 1
         });
-        cttvRestApi.call(url)
-        .catch (function (x) {
-            var obj = tooltip_obj(gene);
-            t.call(elem, obj, event);
-        })
-        .then(function (resp) {
-            var obj;
-            if (gene.isGene) {
-                obj = tooltip_obj (gene, resp.body);
-            } else {
-                obj = tooltip_obj (gene.gene, resp.body, gene); // gene is a transcript
-            }
-            // var obj = tooltip_obj (gene, resp.body);
-            t.call(elem, obj, event);
-        });
+        conf.cttvRestApi.call(url)
+            .catch (function (x) {
+                var obj = tooltip_obj(gene);
+                t.call(elem, obj, event);
+            })
+            .then(function (resp) {
+                var obj;
+                if (gene.isGene) {
+                    obj = tooltip_obj (gene, resp.body);
+                } else {
+                    obj = tooltip_obj (gene.gene, resp.body, gene); // gene is a transcript
+                }
+                // var obj = tooltip_obj (gene, resp.body);
+                t.call(elem, obj, event);
+            });
+
         s.call(elem, {
             header : (gene.isGene? gene.external_name + " (" + gene.gene_id + ")" : gene.gene.display_name + "(" + gene.gene.id + ")"),
             body : "<i class='fa fa-spinner fa-2x fa-spin'></i>"
         });
 
-    };
+    });
 
-    m.ensemblRestApi = function (api) {
-        if (!arguments.length) {
-            return ensemblRestApi;
-        }
-        ensemblRestApi = api;
-        return this;
-    };
 
-    m.cttvRestApi = function (api) {
-        if (!arguments.length) {
-            return cttvRestApi;
-        }
-        cttvRestApi = api;
-        return this;
-    };
-
-    m.view = function (v) {
-        if (!arguments.length) {
-            return view;
-        }
-        view = v;
-        return this;
-    };
+    // m.ensemblRestApi = function (api) {
+    //     if (!arguments.length) {
+    //         return ensemblRestApi;
+    //     }
+    //     ensemblRestApi = api;
+    //     return this;
+    // };
+    //
+    // m.cttvRestApi = function (api) {
+    //     if (!arguments.length) {
+    //         return cttvRestApi;
+    //     }
+    //     cttvRestApi = api;
+    //     return this;
+    // };
+    //
+    // m.view = function (v) {
+    //     if (!arguments.length) {
+    //         return view;
+    //     }
+    //     view = v;
+    //     return this;
+    // };
 
     return m;
 };

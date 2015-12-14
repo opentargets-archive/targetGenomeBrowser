@@ -6,7 +6,7 @@
 
     <!-- Fontawesome -->
     <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css"/>
-    <link rel="stylesheet" href="../build/index.css"/>
+    <link rel="stylesheet" href="../build/cttv.targetGenomeBrowser.css"/>
 
     <style>
     .center {
@@ -30,13 +30,17 @@
         .width(950);
 
     var gBTheme = targetGenomeBrowser()
-        .show_snps(false);
+        .show_nav(false)
+        .show_links(false);
+
     gBTheme(gB, document.getElementById("genomeBrowser"));
 
     var geneTrack = gBTheme.track("gene");
     geneTrack.display().on("click", function (gene) {
-        gB.gene (gene.id);
-        gB.start();
+        if (!gene.Parent) { // It is not a transcript
+            gB.gene (gene.id);
+            gBTheme.start();
+        }
     });
 
     </script>
