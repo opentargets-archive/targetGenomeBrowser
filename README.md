@@ -1,7 +1,10 @@
+**Disclaimer: This plug-in is not ready for production yet since we still plan some changes in the API calls etc.
+If you are interested in using the plug-in in a production environment, contact us first (see contact details below)**
 
 # CTTV Target Genome Browser
 
 Minimal genome browser built for the CTTV web application.
+
 
 ## Installation
 
@@ -14,15 +17,15 @@ npm install
 npm build-browser
 ````
 
-From npm
+From npm (not available yet!)
 ````
 npm install cttv.targetGenomeBrowser
 ````
 
 ## Usage
 
-`cttvGenomeBrowser` is based on [tnt.genome](https://github.com/emepyc/tnt.genome), a library for making minimal genome browsers and displaying genome annotation. Check the documentation of [tnt.genome](https://github.com/emepyc/tnt.genome) for more options.
-An example of usage is:
+`cttvGenomeBrowser` is based on [tnt.genome](https://github.com/emepyc/tnt.genome), a library for making minimal genome browsers and displaying genome annotation. Check its documentation for more options.
+Example of usage:
 
 ````javascript
 // Define an instance of tnt.genome
