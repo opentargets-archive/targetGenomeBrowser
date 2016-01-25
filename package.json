@@ -40,6 +40,9 @@
     "gulp-watch": "^4.3.5",
     "mkdirp": "^0.5.1"
   },
+  "biojs": {
+      "registryHeight": "500"
+  },
   "sniper": {
     "js": [
       "http://d3js.org/d3.v3.min.js",
@@ -52,6 +55,6 @@
     "snippets": [
       "snippets"
     ],
-    "first": "default.js"
+    "first": "default"
   }
 }
