@@ -1,57 +1,57 @@
 {
-    "name": "cttv.targetGenomeBrowser",
-    "version": "0.0.0",
-    "description": "Lightweight genome browser for CTTV targets based on TnT.genome",
-    "main": "index.js",
-    "directories": {
-        "test": "test"
-    },
-    "keywords": [
-        "cttv",
-        "tnt",
-        "genome",
-        "browser",
-	"biojs"
+  "name": "cttv.targetGenomeBrowser",
+  "version": "0.0.1",
+  "description": "Lightweight genome browser for CTTV targets based on TnT.genome",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "keywords": [
+    "cttv",
+    "tnt",
+    "genome",
+    "browser",
+    "biojs"
+  ],
+  "author": "Miguel Pignatelli",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CTTV/targetGenomeBrowser"
+  },
+  "dependencies": {
+    "cttv.api": "0.0.0",
+    "font-awesome": "^4.5.0",
+    "rsvp": "^3.0.18",
+    "tnt.api": "0.1.0",
+    "tnt.genome": "0.1.4",
+    "tnt.tooltip": "0.1.0",
+    "tnt.utils": "0.1.0"
+  },
+  "devDependencies": {
+    "del": "^2.2.0",
+    "gulp": "^3.9.0",
+    "gulp-browserify": "^0.5.1",
+    "gulp-gzip": "^1.2.0",
+    "gulp-jshint": "^2.0.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.1.1",
+    "gulp-uglify": "^1.5.1",
+    "gulp-watch": "^4.3.5",
+    "mkdirp": "^0.5.1"
+  },
+  "sniper": {
+    "js": [
+      "http://d3js.org/d3.v3.min.js",
+      "http://cttv.github.io/targetGenomeBrowser/build/cttv.targetGenomeBrowser.min.js"
     ],
-    "author": "Miguel Pignatelli",
-    "license": "Apache-2.0",
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/CTTV/targetGenomeBrowser"
-    },
-    "dependencies": {
-        "cttv.api": "0.0.0",
-        "font-awesome": "^4.5.0",
-        "rsvp": "^3.0.18",
-        "tnt.api": "0.1.0",
-        "tnt.genome": "0.1.4",
-        "tnt.tooltip": "0.1.0",
-        "tnt.utils": "0.1.0"
-    },
-    "devDependencies": {
-        "del": "^2.2.0",
-        "gulp": "^3.9.0",
-        "gulp-browserify": "^0.5.1",
-        "gulp-gzip": "^1.2.0",
-        "gulp-jshint": "^2.0.0",
-        "gulp-rename": "^1.2.2",
-        "gulp-sass": "^2.1.1",
-        "gulp-uglify": "^1.5.1",
-        "gulp-watch": "^4.3.5",
-        "mkdirp": "^0.5.1"
-    },
-    "sniper": {
-        "js": [
-            "http://d3js.org/d3.v3.min.js",
-            "http://cttv.github.io/targetGenomeBrowser/build/cttv.targetGenomeBrowser.min.js"
-        ],
-        "css": [
-            "http://cttv.github.io/targetGenomeBrowser/build/cttv.targetGenomeBrowser.css",
-            "https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"
-        ],
-        "snippets": [
-            "snippets"
-        ],
-        "first": "default.js"
-    }
+    "css": [
+      "http://cttv.github.io/targetGenomeBrowser/build/cttv.targetGenomeBrowser.css",
+      "https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"
+    ],
+    "snippets": [
+      "snippets"
+    ],
+    "first": "default.js"
+  }
 }
