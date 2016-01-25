@@ -5,10 +5,12 @@
     cursor : pointer;
 }
 
-.tnt_options_pane {
-    margin-left : auto;
-    margin-right : auto;
-    width : 50%;
+.tnt_nav_wrapper {
+    text-align: center;
+}
+
+.tnt_nav_pane {
+    display: "inline-block";
 }
 
 .tnt_elem {

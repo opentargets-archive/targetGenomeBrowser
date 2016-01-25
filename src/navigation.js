@@ -9,14 +9,18 @@ var genome_browser_nav = function () {
     // var chr = 0;
     var gBrowser;
 
-    var theme = function (gB, div) {
+    var theme = function (gB, container) {
         gBrowser = gB;
-        var opts_pane = d3.select(div)
+        var div = d3.select(container)
+            .append("div")
+            .attr("class", "tnt_nav_wrapper");
+
+        var opts_pane = div
             .append ("div")
-            .attr("class", "tnt_options_pane")
+            .attr("class", "tnt_nav_pane")
             .style("display", function() {
                 if (show_options) {
-                    return "block";
+                    return "inline-block";
                 }
                 return "none";
             });

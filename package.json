@@ -43,10 +43,10 @@
     "sniper": {
         "js": [
             "http://d3js.org/d3.v3.min.js",
-            "build/cttv.targetGenomeBrowser.js"
+            "http://cttv.github.io/targetGenomeBrowser/build/cttv.targetGenomeBrowser.min.js"
         ],
         "css": [
-            "build/cttv.targetGenomeBrowser.css",
+            "http://cttv.github.io/targetGenomeBrowser/build/cttv.targetGenomeBrowser.css",
             "https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"
         ],
         "snippets": [
