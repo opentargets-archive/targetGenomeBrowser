@@ -33,15 +33,15 @@ var genome_browser_nav = function () {
 
         var zoomIn_button = opts_pane
             .append("i")
-            .attr("title", "zoom in")
+            .attr("title", "zoom out")
             .attr("class", "cttvGenomeBrowserIcon fa fa-search-plus fa-2x")
-            .on("click", theme.zoomIn);
+            .on("click", theme.zoomOut);
 
         var zoomOut_button = opts_pane
             .append("i")
-            .attr("title", "zoom out")
+            .attr("title", "zoom in")
             .attr("class", "cttvGenomeBrowserIcon fa fa-search-minus fa-2x")
-            .on("click", theme.zoomOut);
+            .on("click", theme.zoomIn);
 
         var right_button = opts_pane
             .append("i")

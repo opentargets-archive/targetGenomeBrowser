@@ -521,7 +521,7 @@ var cttv_genome_browser = function() {
         var geneUrl = ensemblRestApi.url()
             .endpoint("lookup/id/:id")
             .parameters({
-                id: gB.gene()
+                id: gBrowser.gene()
             });
         // var geneUrl = ensemblRestApi.url.gene ({
         //     id: gB.gene()
@@ -549,7 +549,7 @@ var cttv_genome_browser = function() {
             snpsClinvarPromise = pipelines()
                 .ensemblRestApi (ensemblRestApi)
                 .cttvRestApi (conf.cttvRestApi)
-                .rare (gB.gene());
+                .rare (gBrowser.gene());
         } else {
             snpsClinvarPromise = new Promise (function (res, rej) {
                 res({});
@@ -562,7 +562,7 @@ var cttv_genome_browser = function() {
             snpsGwasPromise = pipelines()
                 .ensemblRestApi (ensemblRestApi)
                 .cttvRestApi (conf.cttvRestApi)
-                .common (gB.gene());
+                .common (gBrowser.gene());
         } else {
             snpsGwasPromise = new Promise (function (resolve, reject) {
                 resolve({});
