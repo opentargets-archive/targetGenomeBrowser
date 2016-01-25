@@ -444,7 +444,8 @@ var cttv_genome_browser = function() {
         // The order of the elements are: Nav div // genome browser div // legend div
         // nav div
         navDiv = d3.select(div)
-            .append("div");
+            .append("div")
+            .style("width", "950px");
         // Navigation
         navTheme (gBrowser, navDiv.node());
 
