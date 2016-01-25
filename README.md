@@ -17,9 +17,9 @@ npm install
 npm build-browser
 ````
 
-From npm (not available yet!)
+From npm
 ````
-npm install cttv.targetGenomeBrowser
+npm install cttv.genome
 ````
 
 ## Usage
