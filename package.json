@@ -11,6 +11,9 @@
     "tnt",
     "genome",
     "browser",
+    "snps",
+    "variation",
+    "disease",
     "biojs"
   ],
   "author": "Miguel Pignatelli",
@@ -55,6 +58,6 @@
     "snippets": [
       "snippets"
     ],
-    "first": "default"
+    "first": "simple"
   }
 }
