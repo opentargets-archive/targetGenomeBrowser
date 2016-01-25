@@ -3,4 +3,3 @@ node_modules
 .sass-cache
 *.css.map
 .DS_Store
-build
