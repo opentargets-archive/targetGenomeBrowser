@@ -87,11 +87,11 @@ var genome_browser_nav = function () {
 
     //// API
     theme.left = function () {
-        gBrowser.move_left(1.5);
+        gBrowser.scroll(1.5);
     };
 
     theme.right = function () {
-        gBrowser.move_right(1.5);
+        gBrowser.scroll(-1.5);
     };
 
     theme.zoomIn = function () {
