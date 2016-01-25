@@ -1,6 +1,6 @@
 {
   "name": "cttv.genome",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Lightweight genome browser for CTTV targets based on TnT Genome",
   "main": "index.js",
   "directories": {
@@ -41,7 +41,7 @@
     "mkdirp": "^0.5.1"
   },
   "biojs": {
-      "registryHeight": "500"
+    "registryHeight": "500"
   },
   "sniper": {
     "js": [
