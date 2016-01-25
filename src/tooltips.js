@@ -99,9 +99,14 @@ var tooltips = function () {
         var elem = this;
         var spinner = tnt.tooltip.plain()
             .id(id);
-        var url = conf.ensemblRestApi.url.variation({
-            species : "human"
-        });
+        var url = conf.ensemblRestApi.url()
+            .endpoint("/variation/:species")
+            .parameters({
+                species: "human"
+            });
+        // var url = conf.ensemblRestApi.url.variation({
+        //     species : "human"
+        // });
         conf.ensemblRestApi.call (url, {
             "ids" : [data.name]
         })

@@ -173,9 +173,14 @@ var pipelines = function () {
     };
 
     var ensembl_call_snps = function (snp_names) {
-        var var_url = rest.ensembl.url.variation ({
-            species : "human"
-        });
+        var var_url = rest.ensembl.url()
+            .endpoint("/variation/:species")
+            .parameters({
+                species: "human"
+            });
+        // var var_url = rest.ensembl.url.variation ({
+        //     species : "human"
+        // });
 
         if (snp_names.length) {
             return rest.ensembl

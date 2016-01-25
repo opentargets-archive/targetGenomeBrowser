@@ -18,11 +18,10 @@
     "cttv.api": "0.0.0",
     "font-awesome": "^4.5.0",
     "rsvp": "^3.0.18",
-    "tnt.api": "0.0.1",
-    "tnt.ensembl": "^0.0.11",
-    "tnt.genome": "0.0.39",
-    "tnt.tooltip": "0.0.11",
-    "tnt.utils": "0.0.1"
+    "tnt.api": "0.1.0",
+    "tnt.genome": "0.1.4",
+    "tnt.tooltip": "0.1.0",
+    "tnt.utils": "0.1.0"
   },
   "devDependencies": {
     "del": "^2.2.0",

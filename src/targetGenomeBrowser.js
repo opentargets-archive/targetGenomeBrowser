@@ -5,7 +5,7 @@ var aggregation = require("./aggregation.js");
 var RSVP = require('rsvp');
 var apijs = require("tnt.api");
 var biotypes = require("./biotypes.js");
-var cttvRestApi = require("cttv.api")();
+var cttvRestApi = require("cttv.api");
 var pipelines = require("./pipelines.js");
 
 var cttv_genome_browser = function() {
@@ -17,7 +17,7 @@ var cttv_genome_browser = function() {
         show_links: true,
         show_snps: true,
         show_nav: true,
-        cttvRestApi: cttvApi(),
+        cttvRestApi: cttvRestApi().prefix("https://www.targetvalidation.org/api/latest/"),
         efo: undefined
     };
 
@@ -58,7 +58,8 @@ var cttv_genome_browser = function() {
         gBrowser = gB;
         gB.zoom_in(150);
 
-        ensemblRestApi = gB.rest();
+        ensemblRestApi = tnt.board.track.data.genome.ensembl;
+        //ensemblRestApi = gB.rest();
 
         // If the nav is shown or not
         navTheme
@@ -73,8 +74,8 @@ var cttv_genome_browser = function() {
 
         // Transcript data
         var mixedData = tnt.board.track.data.genome.gene();
-        var gene_updater = mixedData.update().retriever();
-        mixedData.update().retriever (function (loc) {
+        var gene_updater = mixedData.retriever();
+        mixedData.retriever (function (loc) {
             return gene_updater(loc)
                 .then (function (fullGenes) {
                     var genes = [];
@@ -94,10 +95,16 @@ var cttv_genome_browser = function() {
                         }
                     }
 
-                    var url = ensemblRestApi.url.gene({
-                        id: gB.gene(),
-                        expand: true
-                    });
+                    var url = ensemblRestApi.url()
+                        .endpoint("/lookup/id/:id")
+                        .parameters({
+                            id: gB.gene(),
+                            expand: true
+                        });
+                    // var url = ensemblRestApi.url.gene({
+                    //     id: gB.gene(),
+                    //     expand: true
+                    // });
                     return ensemblRestApi.call(url)
                         .then (function (resp) {
                             var g = resp.body;
@@ -196,20 +203,27 @@ var cttv_genome_browser = function() {
         // TRACKS!
         // ClinVar track
         var regionEnsemblPromise = function (loc) {
-            var regionUrl = ensemblRestApi.url.region ({
-                species: loc.species,
-                chr: loc.chr,
-                from: loc.from,
-                to: loc.to,
-                features: ["gene"]
-            });
+            var regionUrl = ensemblRestApi.url()
+                .endpoint("overlap/region/:species/:region")
+                .parameters({
+                    species: loc.species,
+                    region: (loc.chr + ":" + loc.from + "-" + loc.to),
+                    feature: ["gene"]
+                });
+            // var regionUrl = ensemblRestApi.url.region ({
+            //     species: loc.species,
+            //     chr: loc.chr,
+            //     from: loc.from,
+            //     to: loc.to,
+            //     features: ["gene"]
+            // });
             return ensemblRestApi.call(regionUrl)
                 .then (function (resp) {
                     return resp.body;
                 });
         };
 
-        var clinvar_updater = tnt.board.track.data.retriever.async()
+        var clinvar_updater = tnt.board.track.data.async()
             .retriever (function (loc) {
                 return regionEnsemblPromise(loc)
                     .then (function (genes) {
@@ -253,27 +267,27 @@ var cttv_genome_browser = function() {
 
         var clinvar_display = tnt.board.track.feature.pin()
             .domain([0.3, 1.2])
-            .foreground_color (foreground_color)
+            .color (foreground_color)
             .index(function (d) {
                 return d.name;
             })
             .on("click", tooltips.snp)
             .layout(tnt.board.track.layout()
-                .elements(aggregation)
+                .elements(function(elems) {
+                    aggregation(elems, clinvar_display.scale());
+                })
             );
 
         var clinvar_track = tnt.board.track()
             .label("Variants in rare diseases")
             .height(60)
-            .background_color("white")
+            .color("white")
             .display(clinvar_display)
-            .data (tnt.board.track.data()
-                .update( clinvar_updater )
-            );
+            .data (clinvar_updater);
 
         // Async Gwas updater for ALL genes
         // var gwas_spinner = spinner();
-        var gwas_updater = tnt.board.track.data.retriever.async()
+        var gwas_updater = tnt.board.track.data.async()
             .retriever (function (loc) {
                 return regionEnsemblPromise(loc)
                     .then (function (genes) {
@@ -311,10 +325,12 @@ var cttv_genome_browser = function() {
             .index(function (d) {
                 return d.name;
             })
-            .foreground_color (foreground_color)
+            .color (foreground_color)
             .on("click", tooltips.snp)
             .layout(tnt.board.track.layout()
-                .elements(aggregation)
+                .elements(function (elems) {
+                    aggregation(elems, clinvar_display.scale());
+                })
             );
 
         //var gwas_guider = gwas_display.guider();
@@ -365,32 +381,28 @@ var cttv_genome_browser = function() {
         var gwas_track = tnt.board.track()
             .label("Variants in common diseases")
             .height(60)
-            .background_color("white")
+            .color("white")
             .display(gwas_display)
-            .data (tnt.board.track.data()
-                .update (gwas_updater)
-            );
+            .data (gwas_updater);
 
         // Aux track for label
         var transcript_label_track = tnt.board.track()
             .label ("Genes / Transcripts")
             .height(20)
-            .background_color ("#FFFFFF")
+            .color ("#FFFFFF")
             .display(tnt.board.track.feature.block())
-            .data(tnt.board.track.data()
-                .update(tnt.board.track.data.retriever.sync()
+            .data(tnt.board.track.data.sync()
                     .retriever (function () {
                         return [];
                     })
-                )
             );
 
         // Transcript / Gene track
         var transcript_track = tnt.board.track()
             .height(geneTrackHeight)
-            .background_color("#FFFFFF")
+            .color("#FFFFFF")
             .display(tnt.board.track.feature.genome.transcript()
-                .foreground_color (function (t) {
+                .color (function (t) {
                     return t.featureColor;
                 })
                 .on("click", tooltips.gene)
@@ -412,7 +424,7 @@ var cttv_genome_browser = function() {
                     }
                     geneTrackHeight = needed_height;
                     transcript_track.height(needed_height);
-                    gB.reorder(gB.tracks()); // reorder re-computes track heights
+                    gB.tracks(gB.tracks()); // reorder re-computes track heights
                 }
         });
 
@@ -421,7 +433,7 @@ var cttv_genome_browser = function() {
         var sequence_track = tnt.board.track()
             .label ("sequence")
             .height(30)
-            .background_color("white")
+            .color("white")
             .display(tnt.board.track.feature.genome.sequence())
             .data(tnt.board.track.data.genome.sequence()
                 .limit(200)
@@ -506,9 +518,14 @@ var cttv_genome_browser = function() {
     // API
     // DATA
     var start = function () {
-        var geneUrl = ensemblRestApi.url.gene ({
-            id: gB.gene()
-        });
+        var geneUrl = ensemblRestApi.url()
+            .endpoint("lookup/id/:id")
+            .parameters({
+                id: gB.gene()
+            });
+        // var geneUrl = ensemblRestApi.url.gene ({
+        //     id: gB.gene()
+        // });
         var genePromise = ensemblRestApi.call(geneUrl)
             .then (function (resp) {
                 return resp.body;
