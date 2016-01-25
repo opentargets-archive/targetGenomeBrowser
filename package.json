@@ -44,7 +44,7 @@
     "mkdirp": "^0.5.1"
   },
   "biojs": {
-    "registryHeight": "500"
+    "registryHeight": "600"
   },
   "sniper": {
     "js": [
