@@ -6,7 +6,6 @@
 
     <!-- Fontawesome -->
     <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css"/>
-    <link rel="stylesheet" href="../build/cttv.targetGenomeBrowser.css"/>
 
     <style>
     .center {
@@ -19,10 +18,17 @@
     <!-- D3 -->
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 
-    <script src="../build/cttv.targetGenomeBrowser.js"></script>
+    <!-- TnT Genome -->
+    <link rel="stylesheet" href="http://tntvis.github.io/tnt.genome/build/tnt.genome.css" type="text/css" />
+    <script src="http://tntvis.github.io/tnt.genome/build/tnt.genome.min.js"></script>
+
+    <!-- Target Genome Browser -->
+    <link rel="stylesheet" href="../build/cttv.genome.css" type="text/css" />
+    <script src="../build/cttv.genome.js"></script>
 
     <h1>CTTV minimal genome browser</h1>
     <div id="genomeBrowser" class="center"></div>
+
     <script>
     var gB = tnt.board.genome()
         .species("human")

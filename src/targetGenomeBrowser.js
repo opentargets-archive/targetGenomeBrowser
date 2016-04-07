@@ -17,7 +17,7 @@ var cttv_genome_browser = function() {
         show_links: true,
         show_snps: true,
         show_nav: true,
-        cttvRestApi: cttvRestApi().prefix("https://www.targetvalidation.org/api/latest/"),
+        cttvRestApi: cttvRestApi().prefix("http://test.targetvalidation.org:8111/api/"),
         efo: undefined
     };
 
