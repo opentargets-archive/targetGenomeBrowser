@@ -1,5 +1,8 @@
-var pipelines = function () {
+var RSVP = require('rsvp');
 
+var snpsCache = {};
+
+var pipelines = function () {
     var rest = {
         ensembl: undefined,
         cttv: undefined,
@@ -78,9 +81,9 @@ var pipelines = function () {
 
                 var refs = [];
                 if (rec.evidence.variant2disease.provenance_type.literature) {
-                        refs = rec.evidence.variant2disease.provenance_type.literature.references.map(function (ref) {
-                            return ref.lit_id.split("/").pop();
-                        });
+                    refs = rec.evidence.variant2disease.provenance_type.literature.references.map(function (ref) {
+                        return ref.lit_id.split("/").pop();
+                    });
                 }
 
                 if (snps[snp_name] === undefined) {
@@ -94,7 +97,6 @@ var pipelines = function () {
                 if (highlight[snp_name]) {
                     snps[snp_name].highlight = true;
                 }
-
 
                 var association = {
                     "efo": this_disease.efo_id,
@@ -110,19 +112,26 @@ var pipelines = function () {
                 console.error(rec);
             }
         }
+
         // snps = clinvarSNPs;
         var snp_names = Object.keys(snps);
         return snp_names;
     };
 
-    var ensembl_parse_clinvar_snps = function (resp) {
-        // data = [];
-        for (var snp_name in resp.body) {
-            var snp = resp.body[snp_name];
-            var info = snps[snp_name];
-            info.pos = snp.mappings[0].start;
-            info.val = 1;
-            // data.push(info);
+    var ensembl_parse_clinvar_snps = function (resps) {
+        for (var i=0; i<resps.length; i++) {
+            var resp = resps[i];
+            for (var snp_name in resp.body) {
+                var snp = resp.body[snp_name];
+
+                // fill the cache with the new snps
+                if (!snpsCache[snp_name]) {
+                    snpsCache[snp_name] = snp;
+                }
+                var info = snps[snp_name];
+                info.pos = snp.mappings[0].start;
+                info.val = 1;
+            }
         }
 
         return snps;
@@ -146,7 +155,7 @@ var pipelines = function () {
         };
     };
 
-    var ensembl_parse_gwas_snps = function (resp) {
+    var ensembl_parse_gwas_snps = function (resps) {
         // data = [];
         var min = function (arr) {
             var m = Infinity;
@@ -160,44 +169,71 @@ var pipelines = function () {
             return m;
         };
 
-        for (var snp_name in resp.body) {
-            if (resp.body.hasOwnProperty(snp_name)) {
-                var snp = resp.body[snp_name];
-                var info = snps[snp_name];
-                info.pos = snp.mappings[0].start;
-                info.val = 1 - min(info.study);
-                // data.push(info);
+        for (var i=0; i<resps.length; i++) {
+            var resp = resps[i];
+            for (var snp_name in resp.body) {
+                if (resp.body.hasOwnProperty(snp_name)) {
+                    var snp = resp.body[snp_name];
+                    var info = snps[snp_name];
+                    info.pos = snp.mappings[0].start;
+                    info.val = 1 - min(info.study);
+
+                    // fill the cache with the new snps
+                    if (!snpsCache[snp_name]) {
+                        snpsCache[snp_name] = snp;
+                    }
+
+                    // data.push(info);
+                }
             }
         }
+
         return snps;
     };
 
     var ensembl_call_snps = function (snp_names) {
-        var var_url = rest.ensembl.url()
-            .endpoint("/variation/:species")
-            .parameters({
-                species: "human"
-            });
         // var var_url = rest.ensembl.url.variation ({
         //     species : "human"
         // });
 
-        if (snp_names.length) {
-            return rest.ensembl
-                .call(var_url, {
-                    "ids" : snp_names
-                });
+        // Look for the cached snps
+        var cachedSnps = {};
+        var nCached = 0;
+        var nonCachedSnpsIds = [];
+        for (var c=0; c<snp_names.length; c++) {
+            var snpId = snp_names[c];
+            if (snpsCache[snpId]) {
+                cachedSnps[snpId] = snpsCache[snpId];
+                nCached++;
+            } else {
+                nonCachedSnpsIds.push(snpId);
+            }
+        }
+        var cachedPromiseRes = [{body:cachedSnps}];
+
+        if (nonCachedSnpsIds.length) {
+            // Don't call for more than x snps at the same time
+            var maxSnps = 200;
+            var ps = cachedPromiseRes;
+            for (var i=0; i<nonCachedSnpsIds.length; i+=maxSnps) {
+                var snps = nonCachedSnpsIds.slice(i,i+maxSnps);
+                var var_url = rest.ensembl.url()
+                    .endpoint("/variation/:species")
+                    .parameters({
+                        species: "human"
+                    });
+
+                ps.push(rest.ensembl.call( var_url, {
+                    "ids": snps
+                }));
+            }
+            return RSVP.all(ps);
         }
 
-        // If there are not snps, don't call ensembl
-        return new Promise (function (resolve, reject) {
-            resolve({body:{}});
-        });
-
+        return cachedPromiseRes;
     };
 
     var cttv_gwas = function (resp) {
-        console.log(resp);
         for (var i=0; i<resp.body.data.length; i++) {
             var rec = resp.body.data[i];
             var this_snp = rec.variant.id[0];

@@ -286,7 +286,6 @@ var cttv_genome_browser = function() {
             .data (clinvar_updater);
 
         // Async Gwas updater for ALL genes
-        // var gwas_spinner = spinner();
         var gwas_updater = tnt.board.track.data.async()
             .retriever (function (loc) {
                 return regionEnsemblPromise(loc)
@@ -298,9 +297,9 @@ var cttv_genome_browser = function() {
                         }
                         var gene = genes[i];
                         var p = pipelines()
-                        .ensemblRestApi (ensemblRestApi)
-                        .cttvRestApi (conf.cttvRestApi)
-                        .common(geneIds, conf.efo);
+                            .ensemblRestApi (ensemblRestApi)
+                            .cttvRestApi (conf.cttvRestApi)
+                            .common(geneIds, conf.efo);
                         allGenesPromises.push(p);
 
                         return RSVP.all(allGenesPromises);
@@ -664,7 +663,7 @@ var cttv_genome_browser = function() {
                 case "common_snps":
                 return tracks.common_snps;
                 case "rare_snps":
-                return tracks.rare_snpsf;
+                return tracks.rare_snps;
             }
             return; // No track returned
         });
