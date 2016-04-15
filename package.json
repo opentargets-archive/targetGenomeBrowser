@@ -23,7 +23,7 @@
     "url": "https://github.com/CTTV/targetGenomeBrowser"
   },
   "dependencies": {
-    "cttv.api": "^0.0.4",
+    "cttv.api": "^0.0.5",
     "font-awesome": "^4.5.0",
     "rsvp": "^3.0.18",
     "tnt.api": "0.1.0",
