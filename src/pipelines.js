@@ -128,9 +128,14 @@ var pipelines = function () {
                 if (!snpsCache[snp_name]) {
                     snpsCache[snp_name] = snp;
                 }
-                var info = snps[snp_name];
-                info.pos = snp.mappings[0].start;
-                info.val = 1;
+
+                if (snp.mappings.length) {
+                    var info = snps[snp_name];
+                    info.pos = snp.mappings[0].start;
+                    info.val = 1;
+                } else {
+                    delete (snps[snp_name]);
+                }
             }
         }
 
