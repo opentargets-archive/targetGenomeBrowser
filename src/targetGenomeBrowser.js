@@ -17,7 +17,7 @@ var cttv_genome_browser = function() {
         show_links: true,
         show_snps: true,
         show_nav: true,
-        cttvRestApi: cttvRestApi().prefix("http://test.targetvalidation.org:8111/api/"),
+        cttvRestApi: cttvRestApi().prefix("https://www.targetvalidation.org/api/"),
         efo: undefined
     };
 
@@ -445,8 +445,6 @@ var cttv_genome_browser = function() {
         navDiv = d3.select(div)
             .append("div")
             .style("width", "950px");
-        // Navigation
-        navTheme (gBrowser, navDiv.node());
 
         gBrowser(div);
 
@@ -602,6 +600,9 @@ var cttv_genome_browser = function() {
                 });
                 gBrowser.start({from: start, to: end});
 
+                // Navigation
+                // Needs to be positioned here because it needs to know the chromosome
+                navTheme (gBrowser, navDiv.node());
             });
     };
 
