@@ -23,6 +23,9 @@ var cttv_genome_browser = function() {
 
     var tracks = {};
 
+    // Public apif
+    var myApi;
+
     var navTheme = nav();
 
     // var show_links   = true;
@@ -139,8 +142,8 @@ var cttv_genome_browser = function() {
             return false;
         };
 
-        var setupLegend = function (genes) {
-            // And we setup/update the legend
+        var getBiotypes = function (genes) {
+            // get the biotypes:
             var biotypes_array = genes.map(function(e){
                 return biotypes.legend[e.biotype];
             });
@@ -165,12 +168,22 @@ var cttv_genome_browser = function() {
             var curr_biotypes = [];
             for (var p in biotypes_hash) {
                 if (biotypes_hash.hasOwnProperty(p)) {
-                    curr_biotypes.push(p);
+                    var b = {};
+                    b.label = p;
+                    b.color = biotypes.color[p];
+                    curr_biotypes.push(b);
                 }
             }
+
+            myApi.get("biotypes", curr_biotypes);
+            return curr_biotypes;
+        };
+
+        var setupLegend = function (genes) {
+            var curr_biotypes = getBiotypes(genes);
             var biotype_legend = gene_legend_div.selectAll(".tnt_biotype_legend")
                 .data(curr_biotypes, function(d){
-                    return d;
+                    return d.label;
                 });
 
             var new_legend = biotype_legend
@@ -187,12 +200,12 @@ var cttv_genome_browser = function() {
                 .style("height", "10px")
                 .style("border", "1px solid #000")
                 .style("background", function(d){
-                    return biotypes.color[d];
+                    return d.color;
                 });
 
             new_legend
                 .append("text")
-                .text(function(d){return d;});
+                .text(function(d){return d.label;});
 
             biotype_legend
                 .exit()
@@ -388,7 +401,7 @@ var cttv_genome_browser = function() {
         var transcript_label_track = tnt.board.track()
             .label ("Genes / Transcripts")
             .height(20)
-            .color ("#FFFFFF")
+            .color ("white")
             .display(tnt.board.track.feature.block())
             .data(tnt.board.track.data.sync()
                     .retriever (function () {
@@ -399,7 +412,7 @@ var cttv_genome_browser = function() {
         // Transcript / Gene track
         var transcript_track = tnt.board.track()
             .height(geneTrackHeight)
-            .color("#FFFFFF")
+            .color("white")
             .display(tnt.board.track.feature.genome.transcript()
                 .color (function (t) {
                     return t.featureColor;
@@ -654,7 +667,7 @@ var cttv_genome_browser = function() {
 
     };
 
-    apijs(gBrowserTheme)
+    myApi = apijs(gBrowserTheme)
         .getset(conf)
         .method('start', start)
         .method ("track", function (name) {
