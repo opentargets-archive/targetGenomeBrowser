@@ -18,7 +18,7 @@ var pipelines = function () {
         var opts, url;
         if (efo) {
             opts = getOpts (genes, ["uniprot", "eva"], efo);
-            url = rest.cttv.url.filterby ();
+            url = rest.cttv.url.filterby();
             return rest.cttv.call(url, opts)
                 .then (function (resp) {
                     cttv_highlight(resp);
@@ -129,7 +129,7 @@ var pipelines = function () {
                     snpsCache[snp_name] = snp;
                 }
 
-                if (snp.mappings.length) {
+                if (snps[snp_name] && snp.mappings.length) {
                     var info = snps[snp_name];
                     info.pos = snp.mappings[0].start;
                     info.val = 1;

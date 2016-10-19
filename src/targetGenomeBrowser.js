@@ -257,7 +257,7 @@ var cttv_genome_browser = function() {
                         for (var i=0; i<resps.length; i++) {
                             var resp = resps[i];
                             for (var snp in resp.snps) {
-                                if (resp.snps.hasOwnProperty(snp)) {
+                                if (resp.snps.hasOwnProperty(snp) && resp.snps[snp].pos) {
                                     flattenedSNPs.push (resp.snps[snp]);
                                 }
                             }
@@ -322,7 +322,7 @@ var cttv_genome_browser = function() {
                         for (var i=0; i<resps.length; i++) {
                             var resp = resps[i];
                             for (var snp in resp.snps) {
-                                if (resp.snps.hasOwnProperty(snp)) {
+                                if (resp.snps.hasOwnProperty(snp) && resp.snps[snp].pos) {
                                     flattenedSNPs.push(resp.snps[snp]);
                                 }
                             }
