@@ -206,9 +206,11 @@ var tooltips = function () {
 
         var url = conf.cttvRestApi.url.associations ({
             "target" : (gene.isGene ? gene.id : gene.gene.id),
-            "datastructure" : "flat",
+            // "datastructure" : "flat",
             "filterbyscorevalue_min": 0,
-            "stringency": 1
+            "stringency": 1,
+            "size": 10000,
+            "direct": true
         });
         conf.cttvRestApi.call(url)
             .catch (function (x) {
