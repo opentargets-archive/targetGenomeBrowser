@@ -28,7 +28,7 @@
     "rsvp": "^3.0.18",
     "tnt.api": "0.1.0",
     "tnt.genome": "^0.1.5",
-    "tnt.tooltip": "0.1.0",
+    "tnt.tooltip": "0.2.0",
     "tnt.utils": "0.1.0"
   },
   "devDependencies": {
