@@ -292,7 +292,7 @@ var cttv_genome_browser = function() {
             );
 
         var clinvar_track = tnt.board.track()
-            .label("Variants in rare diseases")
+            .label("Mutations in rare diseases")
             .height(60)
             .color("white")
             .display(clinvar_display)
@@ -391,7 +391,7 @@ var cttv_genome_browser = function() {
         //});
 
         var gwas_track = tnt.board.track()
-            .label("Variants in common diseases")
+            .label("Mutations in common diseases")
             .height(60)
             .color("white")
             .display(gwas_display)
@@ -481,7 +481,7 @@ var cttv_genome_browser = function() {
         snp_legend_div
             .append("text")
             .attr("class", "tnt_legend_header")
-            .text("SNPs legend:");
+            .text("Variants legend:");
 
         if (conf.show_snps) {
             tracks.common_snps = gwas_track;
@@ -496,31 +496,6 @@ var cttv_genome_browser = function() {
             .add_track(sequence_track)
             .add_track(transcript_label_track)
             .add_track(transcript_track);
-
-
-        // Links div
-        var links_pane = d3.select(div)
-            .append("div")
-            .attr("class", "tnt_links_pane")
-            .style("display", function() {
-                if (conf.show_links) {
-                    return "block";
-                } else {
-                    return "none";
-                }
-            });
-
-        // ensembl
-        links_pane
-            .append("span")
-            .text("Open in Ensembl");
-
-        var ensemblLoc = links_pane
-            .append("i")
-            .attr("title", "open region in ensembl")
-            .attr("class", "cttvGenomeBrowserIcon fa fa-external-link fa-2x")
-            .on("click", function() {var link = buildEnsemblLink(); window.open(link, "_blank");});
-
     };
 
     ///*********************////
@@ -623,20 +598,20 @@ var cttv_genome_browser = function() {
         var snp_legend_data = [];
         if (disease) {
             snp_legend_data.push({
-                label: "SNP in " + gene.display_name + " associated with " + disease.label,
+                label: "Mutation in " + gene.display_name + " associated with " + disease.label,
                 color: snpColors.TargetDisease
             });
             snp_legend_data.push({
-                label: "SNP associated with " + disease.label + " in other genes",
+                label: "Mutation associated with " + disease.label + " in other genes",
                 color: snpColors.Disease
             });
         }
         snp_legend_data.push({
-            label: "SNP in " + gene.display_name,
+            label: "Variant in " + gene.display_name,
             color: snpColors.Target
         });
         snp_legend_data.push({
-            label: "Other SNP",
+            label: "Other Variant",
             color: snpColors.Other
         });
 
@@ -664,6 +639,47 @@ var cttv_genome_browser = function() {
             .text(function(d) {
                 return d.label;
             });
+
+        // Links div
+        var links_pane = snp_legend_div
+            .append("div")
+            .attr("class", "tnt_links_pane")
+            .style("display", function() {
+                if (conf.show_links) {
+                    return "block";
+                } else {
+                    return "none";
+                }
+            });
+
+        // ensembl
+        links_pane
+            .append("span")
+            .text("Open region in Ensembl");
+
+        var ensemblLoc = links_pane
+            .append("i")
+            .attr("title", "open region in ensembl")
+            .attr("class", "cttvGenomeBrowserIcon fa fa-external-link")
+            .on("click", function () {
+                var link = buildEnsemblLink();
+                window.open(link, "_blank");
+            });
+
+        links_pane
+            .append("span")
+            .style("margin-left", "30px")
+            .text("See " + gene.display_name + " in Ensembl");
+
+        links_pane
+            .append("i")
+            .attr("title", "See " + gene + " in Ensembl")
+            .attr("class", "cttvGenomeBrowserIcon fa fa-external-link")
+            .on("click", function () {
+                var link = buildEnsemblGeneLink();
+                window.open(link, "_blank");
+            })
+
 
     };
 
@@ -693,7 +709,12 @@ var cttv_genome_browser = function() {
     // Private methods
 
     var buildEnsemblLink = function() {
-        var url = "http://www.ensembl.org/" + gBrowser.species() + "/Location/View?r=" + gBrowser.chr() + "%3A" + gBrowser.from() + "-" + gBrowser.to();
+        var url = "https://www.ensembl.org/" + gBrowser.species() + "/Location/View?r=" + gBrowser.chr() + "%3A" + gBrowser.from() + "-" + gBrowser.to();
+        return url;
+    };
+
+    var buildEnsemblGeneLink = function () {
+        var url = "https://www.ensembl.org/" + gBrowser.species() + "/Gene/Summary?db=core&g=" + gBrowser.gene();
         return url;
     };
 
@@ -718,11 +739,6 @@ var cttv_genome_browser = function() {
     @param {String} gene The Ensembl gene id. Should be a valid ID of the form ENSGXXXXXXXXX"
     @returns {String} The Ensembl URL for the given gene
     */
-    var buildEnsemblGeneLink = function(ensID) {
-        //"http://www.ensembl.org/Homo_sapiens/Gene/Summary?g=ENSG00000139618"
-        var url = "http://www.ensembl.org/" + gBrowser.species() + "/Gene/Summary?g=" + ensID;
-        return url;
-    };
 
     return gBrowserTheme;
 };
