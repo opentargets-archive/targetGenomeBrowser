@@ -1,6 +1,6 @@
 {
   "name": "cttv.genome",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "Lightweight genome browser for CTTV targets based on TnT Genome",
   "main": "index.js",
   "directories": {
