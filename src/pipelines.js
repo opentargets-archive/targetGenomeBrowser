@@ -179,13 +179,23 @@ var pipelines = function () {
             for (var snp_name in resp.body) {
                 if (resp.body.hasOwnProperty(snp_name)) {
                     var snp = resp.body[snp_name];
-                    var info = snps[snp_name];
-                    info.pos = snp.mappings[0].start;
-                    info.val = 1 - min(info.study);
+
+                    // var info = snps[snp_name];
+                    //
+                    // info.pos = snp.mappings[0].start;
+                    // info.val = 1 - min(info.study);
 
                     // fill the cache with the new snps
                     if (!snpsCache[snp_name]) {
                         snpsCache[snp_name] = snp;
+                    }
+
+                    if (snps[snp_name] && snp.mappings.length) {
+                        var info = snps[snp_name];
+                        info.pos = snp.mappings[0].start;
+                        info.val = 1 - min(info.study);
+                    } else {
+                        delete (snps[snp_name]);
                     }
 
                     // data.push(info);
