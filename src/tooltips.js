@@ -94,11 +94,11 @@ var tooltips = function () {
     api.method('snp', function (data) {
         var t = tnt.tooltip.table()
             .width(250)
-            .id(id);
+            .id(data.name);
         var event = d3.event;
         var elem = this;
         var spinner = tnt.tooltip.plain()
-            .id(id);
+            .id(data.name);
         var url = conf.ensemblRestApi.url()
             .endpoint("/variation/:species")
             .parameters({
@@ -138,7 +138,7 @@ var tooltips = function () {
             var targetValue;
             if (cttvData && cttvData.data && cttvData.data.length > 0) {
                 associationsValue = "<a href='" + conf.prefix + "/target/" + ensemblData.id + "/associations'>" + (cttvData.data.length) + " disease associations</a> ";
-                targetValue = "<a href='" + conf.prefix + "/target/" + ensemblData.id + "'>View CTTV profile</a>";
+                targetValue = "<a href='" + conf.prefix + "/target/" + ensemblData.id + "'>View Open Targets profile</a>";
             }
 
             obj.rows.push ({
@@ -161,7 +161,7 @@ var tooltips = function () {
             }
             if (targetValue !== undefined) {
                 obj.rows.push({
-                    "label" : "CTTV Profile",
+                    "label" : "Profile",
                     "value" : targetValue
                 });
             }
@@ -196,6 +196,7 @@ var tooltips = function () {
         };
 
 
+        var id = (gene.isGene ? gene.id : gene.gene.id);
         var t = tnt_tooltip.table()
             .id(id);
         var event = d3.event;
