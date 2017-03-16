@@ -60,7 +60,7 @@ var pipelines = function () {
     var cttv_highlight = function (resp) {
         for (var i=0; i<resp.body.data.length; i++) {
             var rec = resp.body.data[i];
-            var snp_name = rec.variant.id[0].split("/").pop();
+            var snp_name = rec.variant.id.split("/").pop();
             highlight[snp_name] = 1;
         }
     };
@@ -69,7 +69,7 @@ var pipelines = function () {
         for (var i=0; i<resp.body.data.length; i++) {
             var rec = resp.body.data[i];
             if (rec.type === "genetic_association") {
-                var this_snp = rec.variant.id[0];
+                var this_snp = rec.variant.id;
                 var snp_name = this_snp.split("/").pop();
                 var variantDB = rec.evidence.gene2variant.provenance_type.database;
                 var clinvarId;
@@ -251,7 +251,7 @@ var pipelines = function () {
     var cttv_gwas = function (resp) {
         for (var i=0; i<resp.body.data.length; i++) {
             var rec = resp.body.data[i];
-            var this_snp = rec.variant.id[0];
+            var this_snp = rec.variant.id;
             var this_disease = rec.disease.efo_info;
             var snp_name = this_snp.split("/").pop();
             var this_target = rec.target.gene_info;
