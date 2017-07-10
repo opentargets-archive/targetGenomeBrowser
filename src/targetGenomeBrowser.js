@@ -709,12 +709,12 @@ var cttv_genome_browser = function() {
     // Private methods
 
     var buildEnsemblLink = function() {
-        var url = "https://www.ensembl.org/" + gBrowser.species() + "/Location/View?r=" + gBrowser.chr() + "%3A" + gBrowser.from() + "-" + gBrowser.to();
+        var url = "http://www.ensembl.org/" + gBrowser.species() + "/Location/View?r=" + gBrowser.chr() + "%3A" + gBrowser.from() + "-" + gBrowser.to();
         return url;
     };
 
     var buildEnsemblGeneLink = function () {
-        var url = "https://www.ensembl.org/" + gBrowser.species() + "/Gene/Summary?db=core&g=" + gBrowser.gene();
+        var url = "http://www.ensembl.org/" + gBrowser.species() + "/Gene/Summary?db=core&g=" + gBrowser.gene();
         return url;
     };
 
