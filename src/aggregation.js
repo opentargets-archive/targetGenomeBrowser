@@ -23,7 +23,20 @@ function aggregation (arr, xScale) {
     groups.push (currGroup);
     for (var g=0; g<groups.length; g++) {
         if (groups[g].length > 1) {
-            var med = groups[g][~~(groups[g].length / 2)];
+            var med; // The node with the label
+            // 1. Check if any of them has highlight
+            for (var i=0; i<groups[g].length; i++) {
+                var snp = groups[g][i];
+                if (snp.highlight) {
+                    med = snp;
+                    break;
+                }
+            }
+
+            // 2. Or take the middle one
+            if (!med) {
+                med = groups[g][~~(groups[g].length / 2)];
+            }
             med.label = groups[g].length;
         }
     }

@@ -287,7 +287,7 @@ var cttv_genome_browser = function() {
             .on("click", tooltips.snp)
             .layout(tnt.board.track.layout()
                 .elements(function(elems) {
-                    aggregation(elems, clinvar_display.scale());
+                    aggregation(elems, clinvar_display.scale(), gB.gene());
                 })
             );
 

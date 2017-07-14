@@ -9,7 +9,6 @@ var pipelines = function () {
     };
 
     var snps = {};
-    var data;
     var highlight = {};
 
     var p = {};
@@ -38,7 +37,7 @@ var pipelines = function () {
     p.common = function (genes, efo) {
         var opts, url;
         if (efo) {
-            opts = getOpts (genes, ["gwas_catalog"], efo);
+            opts = getOpts (genes, ["gwas_catalog", "phewascatalog"], efo);
             url = rest.cttv.url.filterby ();
             return rest.cttv.call(url, opts)
                 .then (function (resp) {
@@ -46,7 +45,7 @@ var pipelines = function () {
                     return p.common (genes);
                 });
         }
-        opts = getOpts(genes, ["gwas_catalog"]);
+        opts = getOpts(genes, ["gwas_catalog", "phewascatalog"]);
         url = rest.cttv.url.filterby ();
 
         return rest.cttv.call(url, opts)
