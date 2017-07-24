@@ -23,7 +23,8 @@ function aggregation (arr, xScale) {
     groups.push (currGroup);
     for (var g=0; g<groups.length; g++) {
         if (groups[g].length > 1) {
-            var med; // The node with the label
+            var med = undefined; // The node with the label
+
             // 1. Check if any of them has highlight
             for (var i=0; i<groups[g].length; i++) {
                 var snp = groups[g][i];
