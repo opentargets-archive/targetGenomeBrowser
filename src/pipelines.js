@@ -1,6 +1,8 @@
 var RSVP = require('rsvp');
 
 var snpsCache = {};
+var rareSnps = {};
+var commonSnps = {};
 
 var pipelines = function () {
     var rest = {
@@ -35,9 +37,10 @@ var pipelines = function () {
     };
 
     p.common = function (genes, efo) {
+        snps = commonSnps;
         var opts, url;
         if (efo) {
-            opts = getOpts (genes, ["gwas_catalog", "phewascatalog"], efo);
+            opts = getOpts (genes, ["gwas_catalog", "phewas_catalog"], efo);
             url = rest.cttv.url.filterby ();
             return rest.cttv.call(url, opts)
                 .then (function (resp) {
@@ -45,7 +48,7 @@ var pipelines = function () {
                     return p.common (genes);
                 });
         }
-        opts = getOpts(genes, ["gwas_catalog", "phewascatalog"]);
+        opts = getOpts(genes, ["gwas_catalog", "phewas_catalog"]);
         url = rest.cttv.url.filterby ();
 
         return rest.cttv.call(url, opts)
@@ -189,12 +192,12 @@ var pipelines = function () {
                         snpsCache[snp_name] = snp;
                     }
 
-                    if (snps[snp_name] && snp.mappings.length) {
-                        var info = snps[snp_name];
+                    if (commonSnps[snp_name] && snp.mappings.length) {
+                        var info = commonSnps[snp_name];
                         info.pos = snp.mappings[0].start;
                         info.val = 1 - min(info.study);
                     } else {
-                        delete (snps[snp_name]);
+                        delete (commonSnps[snp_name]);
                     }
 
                     // data.push(info);
@@ -237,7 +240,7 @@ var pipelines = function () {
                         species: "human"
                     });
 
-                ps.push(rest.ensembl.call( var_url, {
+                ps.push(rest.ensembl.call(var_url, {
                     "ids": snps
                 }));
             }
@@ -271,10 +274,10 @@ var pipelines = function () {
                 "efo": this_disease.efo_id,
                 "efo_label": this_disease.label
             });
+            commonSnps[snp_name] = snps[snp_name];
         }
-
-        //snps = gwasSNPs;
-        var snp_names = Object.keys(snps);
+        // var snp_names = Object.keys(snps);
+        var snp_names = Object.keys(commonSnps);
         return snp_names;
     };
 

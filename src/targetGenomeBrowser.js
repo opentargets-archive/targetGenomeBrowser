@@ -308,7 +308,6 @@ var cttv_genome_browser = function() {
                         for (var i=0; i<genes.length; i++) {
                             geneIds.push(genes[i].id);
                         }
-                        var gene = genes[i];
                         var p = pipelines()
                             .ensemblRestApi (ensemblRestApi)
                             .cttvRestApi (conf.cttvRestApi)
