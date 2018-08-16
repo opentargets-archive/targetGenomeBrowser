@@ -390,7 +390,7 @@ var cttv_genome_browser = function() {
         //});
 
         var gwas_track = tnt.board.track()
-            .label("Mutations in common diseases")
+            .label("Variants in common diseases")
             .height(60)
             .color("white")
             .display(gwas_display)
@@ -597,11 +597,11 @@ var cttv_genome_browser = function() {
         var snp_legend_data = [];
         if (disease) {
             snp_legend_data.push({
-                label: "Mutation in " + gene.display_name + " associated with " + disease.label,
+                label: "Variant in " + gene.display_name + " associated with " + disease.label,
                 color: snpColors.TargetDisease
             });
             snp_legend_data.push({
-                label: "Mutation associated with " + disease.label + " in other genes",
+                label: "Variant associated with " + disease.label + " in other genes",
                 color: snpColors.Disease
             });
         }
