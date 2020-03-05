@@ -40,7 +40,7 @@ var pipelines = function () {
         snps = commonSnps;
         var opts, url;
         if (efo) {
-            opts = getOpts (genes, ["gwas_catalog", "phewas_catalog"], efo);
+            opts = getOpts (genes, ["ot_genetics_portal", "phewas_catalog"], efo);
             url = rest.cttv.url.filterby ();
             return rest.cttv.call(url, opts)
                 .then (function (resp) {
@@ -48,7 +48,7 @@ var pipelines = function () {
                     return p.common (genes);
                 });
         }
-        opts = getOpts(genes, ["gwas_catalog", "phewas_catalog"]);
+        opts = getOpts(genes, ["ot_genetics_portal", "phewas_catalog"]);
         url = rest.cttv.url.filterby ();
 
         return rest.cttv.call(url, opts)
@@ -253,7 +253,7 @@ var pipelines = function () {
     var cttv_gwas = function (resp) {
         for (var i=0; i<resp.body.data.length; i++) {
             var rec = resp.body.data[i];
-            var this_snp = rec.variant.id;
+            var this_snp = rec.variant.rs_id || rec.variant.id;
             var this_disease = rec.disease.efo_info;
             var snp_name = this_snp.split("/").pop();
             var this_target = rec.target.gene_info;
@@ -268,8 +268,13 @@ var pipelines = function () {
                 snps[snp_name].highlight = true;
             }
             snps[snp_name].efo.push(this_disease.efo_id);
+            var lit_refs = (
+                rec.evidence.variant2disease.provenance_type.literature && 
+                rec.evidence.variant2disease.provenance_type.literature.references &&
+                rec.evidence.variant2disease.provenance_type.literature.references.length
+            ) ? rec.evidence.variant2disease.provenance_type.literature.references[0].lit_id : 'N/A';
             snps[snp_name].study.push ({
-                "pmid": rec.evidence.variant2disease.provenance_type.literature.references[0].lit_id,
+                "pmid": lit_refs,
                 "pvalue": rec.evidence.variant2disease.resource_score.value,
                 "efo": this_disease.efo_id,
                 "efo_label": this_disease.label
