@@ -12,7 +12,7 @@ From Git
 git clone https://github.com/CTTV/targetGenomeBrowser
 cd targetGenomeBrowser
 npm install
-npm build-browser
+gulp build-browser
 ````
 
 From npm
